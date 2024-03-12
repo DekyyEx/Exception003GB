@@ -1,17 +1,20 @@
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Scanner;
+import java.util.logging.Logger;
 
 public class UserDataApplication {
+    private static final Logger logger = Logger.getLogger(FileWriter.class.getName());
+
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
-        System.out.println("Введите данные в формате: Фамилия Имя Отчество дата_рождения номер_телефона пол");
+        logger.info("Введите данные в формате: Фамилия Имя Отчество дата_рождения номер_телефона пол");
         String input = scanner.nextLine();
 
         String[] data = input.split(" ");
         if (data.length != 6) {
-            System.out.println("Ошибка: введено недостаточно или слишком много данных");
+            logger.warning("Ошибка: введено недостаточно или слишком много данных");
             return;
         }
 
@@ -21,32 +24,31 @@ public class UserDataApplication {
 
         String dateOfBirthString = data[3];
         if (!isValidDateFormat(dateOfBirthString)) {
-            System.out.println("Ошибка: неверный формат даты рождения");
+            logger.warning("Ошибка: неверный формат даты рождения");
             return;
         }
 
         String phoneNumberString = data[4];
         if (!isValidPhoneNumberFormat(phoneNumberString)) {
-            System.out.println("Ошибка: неверный формат номера телефона");
+            logger.warning("Ошибка: неверный формат номера телефона");
             return;
         }
 
         String gender = data[5];
         if (!isValidGender(gender)) {
-            System.out.println("Ошибка: неверный формат пола");
+            logger.warning("Ошибка: неверный формат пола");
             return;
         }
 
         String formattedData = String.format("%s %s %s %s %s %s ", surname, firstName, lastName,
                 dateOfBirthString, phoneNumberString, gender);
 
-        try {
-            FileWriter fileWriter = new FileWriter(surname + ".txt", true);
+        try (FileWriter fileWriter = new FileWriter(surname + ".txt", true);) {
             fileWriter.append(formattedData).append("\n");
-            fileWriter.close();
-            System.out.println("Данные успешно записаны в файл: " + surname + ".txt");
+
+            logger.info("Данные успешно записаны в файл: " + surname + ".txt");
         } catch (IOException e) {
-            System.out.println("Ошибка при записи данных в файл");
+            logger.warning("Ошибка при записи данных в файл");
         }
     }
 
